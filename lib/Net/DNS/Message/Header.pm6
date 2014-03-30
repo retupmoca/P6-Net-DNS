@@ -14,6 +14,8 @@ has Int $.ancount is rw = 0;
 has Int $.nscount is rw = 0;
 has Int $.arcount is rw = 0;
 
+has Int $.parsed-bytes;
+
 multi method new(Blob $data) {
     my ($id, $flags, $qdcount, $ancount, $nscount, $arcount) = $data.unpack('nnnnnn');
     my $qr = ($flags +> 15) +& 0x01;
@@ -25,7 +27,7 @@ multi method new(Blob $data) {
     my $z = ($flags +> 4) +& 0x07;
     my $rcode = $flags +& 0x0F;
 
-    self.bless(:$id, :$qr, :$opcode, :$aa, :$tc, :$rd, :$ra, :$z, :$rcode, :$qdcount, :$ancount, :$nscount, :$arcount);
+    self.bless(:$id, :$qr, :$opcode, :$aa, :$tc, :$rd, :$ra, :$z, :$rcode, :$qdcount, :$ancount, :$nscount, :$arcount, :parsed-bytes(12));
 }
 
 multi method new () {
