@@ -39,7 +39,7 @@ method Buf {
         my $str = $_.encode('ascii');
         $out = $out ~ $len ~ $str;
     }
-    return $out ~ pack('CnnNn', (0, $.type, $.class, $.ttl, $.rdata.elems)) ~ $rdata;
+    return $out ~ pack('CnnNn', (0, $.type, $.class, $.ttl, $.rdata.elems)) ~ $.rdata;
 }
 
 method Blob {

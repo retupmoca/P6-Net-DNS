@@ -61,7 +61,7 @@ method Buf {
                @.question».Buf,
                @.answer».Buf,
                @.authority».Buf,
-               @additional».Buf;
+               @.additional».Buf;
 }
 
 method Blob {
