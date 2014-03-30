@@ -30,9 +30,9 @@ method Buf {
     for @.qname {
         my $len = pack('C', $_.chars);
         my $str = $_.encode('ascii');
-        $out = Buf.new($out.list, $len.list, $str.list);
+        $out = $out ~ $len ~ $str;
     }
-    return Buf.new($out.list, pack('CnnNn', (0, $.type, $.class, $.ttl, $.rdata.elems)).list, $rdata.list);
+    return $out ~ pack('CnnNn', (0, $.type, $.class, $.ttl, $.rdata.elems)) ~ $rdata;
 }
 
 method Blob {
