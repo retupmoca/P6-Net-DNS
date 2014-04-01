@@ -13,13 +13,14 @@ has Net::DNS::Message::Resource @.additional is rw;
 has Int $.parsed-bytes;
 
 multi method new($data is copy) {
+    my %name-offsets;
     my $header = Net::DNS::Message::Header.new($data);
     my $parsed-bytes = $header.parsed-bytes;
     $data = Buf.new($data[$header.parsed-bytes .. *]);
 
     my @question;
     for 1 .. $header.qdcount {
-        my $q = Net::DNS::Message::Question.new($data);
+        my $q = Net::DNS::Message::Question.new($data, %name-offsets, $parsed-bytes);
         $parsed-bytes += $q.parsed-bytes;
         $data = Buf.new($data[$q.parsed-bytes .. *]);
         @question.push($q);
@@ -27,7 +28,7 @@ multi method new($data is copy) {
 
     my @answer;
     for 1 .. $header.ancount {
-        my $a = Net::DNS::Message::Resource.new($data);
+        my $a = Net::DNS::Message::Resource.new($data, %name-offsets, $parsed-bytes);
         $parsed-bytes += $a.parsed-bytes;
         $data = Buf.new($data[$a.parsed-bytes .. *]);
         @answer.push($a);
@@ -35,7 +36,7 @@ multi method new($data is copy) {
 
     my @authority;
     for 1 .. $header.nscount {
-        my $a = Net::DNS::Message::Resource.new($data);
+        my $a = Net::DNS::Message::Resource.new($data, %name-offsets, $parsed-bytes);
         $parsed-bytes += $a.parsed-bytes;
         $data = Buf.new($data[$a.parsed-bytes .. *]);
         @authority.push($a);
@@ -43,7 +44,7 @@ multi method new($data is copy) {
 
     my @additional;
     for 1 .. $header.arcount {
-        my $a = Net::DNS::Message::Resource.new($data);
+        my $a = Net::DNS::Message::Resource.new($data, %name-offsets, $parsed-bytes);
         $parsed-bytes += $a.parsed-bytes;
         $data = Buf.new($data[$a.parsed-bytes .. *]);
         @additional.push($a);
