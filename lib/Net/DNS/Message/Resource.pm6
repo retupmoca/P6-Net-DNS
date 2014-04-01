@@ -11,15 +11,24 @@ has Int $.parsed-bytes;
 multi method new($data is copy){
     my $parsed-bytes = 1;
     my $len = $data.unpack('C');
+    $data = Buf.new($data[1..*]);
     my @name;
     while $len > 0 {
-        $parsed-bytes += $len;
-        @name.push(Buf.new($data[1..$len]).decode('ascii'));
-        $data = Buf.new($data[$len^..*]);
-        $len = $data.unpack('C');
-        $parsed-bytes += 1;
+        if $len >= 192 {
+            # message compression; we don't know how to handle this yet
+            @name.push('Message Compression - NYI');
+            $data = Buf.new($data[1..*]);
+            $len = $data.unpack('C');
+            $parsed-bytes += 1;
+        } else {
+            $parsed-bytes += $len;
+            @name.push(Buf.new($data[0..$len]).decode('ascii'));
+            $data = Buf.new($data[$len..*]);
+            $len = $data.unpack('C');
+            $parsed-bytes += 1;
+            $data = Buf.new($data[1..*]);
+        }
     }
-    $data = Buf.new($data[1..*]);
     my ($type, $class, $ttl, $rdlength) = $data.unpack('nnNn');
     $parsed-bytes += 10;
     $parsed-bytes += $rdlength;
