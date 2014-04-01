@@ -9,7 +9,15 @@ method new($server) {
     self.bless(:$server);
 }
 
-my %types = A => 1;
+my %types = A     => 1,
+            AAAA  => 28,
+            CNAME => 5,
+            MX    => 15,
+            NS    => 2,
+            PTR   => 12,
+            SPF   => 99,
+            SRV   => 33,
+            TXT   => 16;
 method lookup($type, $host){
     my @host = $host.split('.');
     my $message = Net::DNS::Message.new;
@@ -24,20 +32,13 @@ method lookup($type, $host){
     $message.question.push($q);
 
     my $outgoing = $message.Buf;
-    say "Outgoing:";
-    say $message.perl;
-    say $outgoing.perl;
     
-
     my $client = IO::Socket::INET.new(:host($.server), :port(53));
     $client.write(pack('n', $outgoing.elems) ~ $outgoing);
     my $inc-size = $client.read(2);
     $inc-size = $inc-size.unpack('n');
     my $incoming = $client.read($inc-size);
     $client.close;
-
-    say "Incoming:";
-    say $incoming.perl;
 
     my $inc-message = Net::DNS::Message.new($incoming);
     say $inc-message.perl;
