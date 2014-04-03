@@ -1,4 +1,6 @@
-class Net::DNS::Message::Question;
+use Net::DNS::Message::DomainName;
+
+class Net::DNS::Message::Question does Net::DNS::Message::DomainName;
 
 has Str @.qname is rw;
 has Int $.qtype is rw = 0;
@@ -7,35 +9,14 @@ has Int $.qclass is rw = 0;
 has Int $.parsed-bytes;
 
 multi method new($data is copy, %name-offsets is rw, $start-offset) {
-    my @offset-list = (0);
-    my $parsed-bytes = 1;
-    my $len = $data.unpack('C');
-    $data = Buf.new($data[1..*]);
-    my @qname;
-    while $len > 0 {
-        if $len >= 192 {
-            @offset-list.push(0);
-            @qname.push(%name-offsets{$data[0]}.list);
-            $data = Buf.new($data[1..*]);
-            $len = $data.unpack('C');
-            $parsed-bytes += 1;
-        } else {
-            $parsed-bytes += $len;
-            @offset-list.push($len);
-            @qname.push(Buf.new($data[0..^$len]).decode('ascii'));
-            $data = Buf.new($data[$len..*]);
-            $len = $data.unpack('C');
-            $parsed-bytes += 1;
-            $data = Buf.new($data[1..*]);
-        }
-    }
+    my $domain-name = self.parse-domain-name($data, %name-offsets, $start-offset);
+    my @qname = $domain-name<name>.list;
+    my $parsed-bytes = $domain-name<bytes>;
+    
+    $data = Buf.new($data[$parsed-bytes..*]);
+
     my ($qtype, $qclass) = $data.unpack('nn');
     $parsed-bytes += 4;
-
-    for 1..^+@offset-list {
-        my $i = $_ - 1;
-        %name-offsets{$start-offset + @offset-list[$i]} = @qname[$i..*];
-    }
 
     self.bless(:@qname, :$qtype, :$qclass, :$parsed-bytes);
 }
