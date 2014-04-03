@@ -63,10 +63,18 @@ multi method new($data is copy, %name-offsets is rw, $start-offset){
             $rdata-str = $name<name>.join('.');
         }
         when 99 { # SPF
-
+            # same format as TXT I think?
+            my $tmpdata = Buf.new($rdata[1..*]);
+            $rdata-str = $tmpdata.decode('ascii');
         }
         when 33 { # SRV
-
+            # first four bytes are priority, weight; which we ignore
+            # next two are port
+            my ($priority, $weight, $port) = $data.unpack('nnn');
+            my $name = self.parse-domain-name(Buf.new($data[6..*]),
+                                                %name-offsets,
+                                                $start-offset + $parsed-bytes);
+            $rdata-str = $name<name>.join('.') ~ ':' ~ $port;
         }
         when 16 { # TXT
             my $tmpdata = Buf.new($rdata[1..*]);

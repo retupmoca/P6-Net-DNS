@@ -41,5 +41,8 @@ method lookup($type, $host){
     $client.close;
 
     my $inc-message = Net::DNS::Message.new($incoming);
-    say $inc-message.perl;
+
+    return gather for $inc-message.answer.list {
+        take $_.rdata-str;
+    }
 }
