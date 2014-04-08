@@ -43,6 +43,6 @@ method lookup($type, $host){
     my $inc-message = Net::DNS::Message.new($incoming);
 
     return gather for $inc-message.answer.list {
-        take $_.rdata-str;
+        take $_.rdata-parsed;
     }
 }

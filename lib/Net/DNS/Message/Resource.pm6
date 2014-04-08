@@ -1,5 +1,14 @@
 use Net::DNS::Message::DomainName;
 
+use Net::DNS::Message::Resource::A;
+use Net::DNS::Message::Resource::AAAA;
+use Net::DNS::Message::Resource::CNAME;
+use Net::DNS::Message::Resource::MX;
+use Net::DNS::Message::Resource::PTR;
+use Net::DNS::Message::Resource::SPF;
+use Net::DNS::Message::Resource::SRV;
+use Net::DNS::Message::Resource::TXT;
+
 class Net::DNS::Message::Resource does Net::DNS::Message::DomainName;
 
 has Str @.name is rw;
@@ -7,8 +16,9 @@ has Int $.type is rw = 0;
 has Int $.class is rw = 0;
 has Int $.ttl is rw = 0;
 has Buf $.rdata = Buf.new;
-has $.rdata-str;
 
+has Int $.start-offset;
+has %.name-offsets;
 has Int $.parsed-bytes;
 
 multi method new($data is copy, %name-offsets is rw, $start-offset){
@@ -24,65 +34,38 @@ multi method new($data is copy, %name-offsets is rw, $start-offset){
     $data = Buf.new($data[10..*]);
     my $rdata = Buf.new($data[0..^$rdlength]);
 
-    my $rdata-str;
+    my $self = self.bless(:@name, :$type, :$class, :$ttl, :$rdata, :$start-offset, :$parsed-bytes, :%name-offsets);
+
     given $type {
         when 1 { # A
-            $rdata-str = $rdata[0] ~ '.' ~ $rdata[1] ~ '.' ~ $rdata[2] ~ '.' ~ $rdata[3];
+            $self does Net::DNS::Message::Resource::A;
         }
         when 28 { # AAAA
-            for 0..^$rdata.list.elems {
-                $rdata-str ~= $rdata[$_].fmt("%02x");
-                if $_ && $_ % 2 && $_ != ($rdata.list.elems - 1) {
-                    $rdata-str ~= ':';
-                }
-            }
+            $self does Net::DNS::Message::Resource::AAAA;
         }
         when 5 { # CNAME
-            my $name = self.parse-domain-name($data,
-                                              %name-offsets,
-                                              $start-offset + $parsed-bytes);
-            $rdata-str = $name<name>.join('.');
+            $self does Net::DNS::Message::Resource::CNAME;
         }
         when 15 { # MX
-            # first two bytes is priority - we only care about the domain for now
-            my $name = self.parse-domain-name(Buf.new($data[2..*]),
-                                                %name-offsets,
-                                                $start-offset + $parsed-bytes);
-            $rdata-str = $name<name>.join('.');
+            $self does Net::DNS::Message::Resource::MX;
         }
         when 2 { # NS
-            my $name = self.parse-domain-name($data,
-                                                %name-offsets,
-                                                $start-offset + $parsed-bytes);
-            $rdata-str = $name<name>.join('.');
+            $self does Net::DNS::Message::Resource::NS;
         }
         when 12 { # PTR
-            my $name = self.parse-domain-name($data,
-                                                %name-offsets,
-                                                $start-offset + $parsed-bytes);
-            $rdata-str = $name<name>.join('.');
+            $self does Net::DNS::Message::Resource::PTR;
         }
         when 99 { # SPF
-            # same format as TXT I think?
-            my $tmpdata = Buf.new($rdata[1..*]);
-            $rdata-str = $tmpdata.decode('ascii');
+            $self does Net::DNS::Message::Resource::SPF;
         }
         when 33 { # SRV
-            # first four bytes are priority, weight; which we ignore
-            # next two are port
-            my ($priority, $weight, $port) = $data.unpack('nnn');
-            my $name = self.parse-domain-name(Buf.new($data[6..*]),
-                                                %name-offsets,
-                                                $start-offset + $parsed-bytes);
-            $rdata-str = $name<name>.join('.') ~ ':' ~ $port;
+            $self does Net::DNS::Message::Resource::SRV;
         }
         when 16 { # TXT
-            my $tmpdata = Buf.new($rdata[1..*]);
-            $rdata-str = $tmpdata.decode('ascii');
+            $self does Net::DNS::Message::Resource::TXT;
         }
     }
 
-    self.bless(:@name, :$type, :$class, :$ttl, :$rdata, :$rdata-str, :$parsed-bytes);
 }
 
 multi method new () {
