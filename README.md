@@ -6,12 +6,12 @@ A simple DNS resolver.
 If you need a request type that isn't yet supported, open a github issue and it
 will be added (hopefully) quickly.
 
-== Example Usage ==
+## Example Usage ##
 
     my $resolver = Net::DNS.new('8.8.8.8'); # google dns server
     my @addresses = $resolver.lookup('A', 'google.com'); # ("1.2.3.4", "5.6.7.8", ...)
 
-== Methods ==
+## Methods ##
 
  -  `new(Str $host)`
     
@@ -22,7 +22,7 @@ will be added (hopefully) quickly.
     Looks up the specified $name, looking for records of $type. Returns a list of
     response classes, specified below. A failed lookup returns an empty list.
 
-== Supported DNS Types ==
+## Supported DNS Types ##
 
 The return of a lookup is a list of classes. Which class depends on the request
 type.
