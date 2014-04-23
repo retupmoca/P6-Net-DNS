@@ -12,9 +12,10 @@ class Net::DNS::SRV {
 }
 
 method rdata-parsed {
+    my $rdata-length = $.rdata.elems;
     my ($priority, $weight, $port) = $.rdata.unpack('nnn');
     my $name = self.parse-domain-name(Buf.new($.rdata[6..*]),
                                       %.name-offsets,
-                                      $.start-offset + $.parsed-bytes);
+                                      $.start-offset + $.parsed-bytes - $rdata-length + 6);
     return Net::DNS::SRV.new(:$priority, :$weight, :$port, :name($name<name>.list));
 }

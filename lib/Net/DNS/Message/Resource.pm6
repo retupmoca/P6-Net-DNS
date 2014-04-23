@@ -18,7 +18,7 @@ has Int $.ttl is rw = 0;
 has Buf $.rdata = Buf.new;
 
 has Int $.start-offset;
-has %.name-offsets;
+has %.name-offsets is rw;
 has Int $.parsed-bytes;
 
 multi method new($data is copy, %name-offsets is rw, $start-offset){
@@ -34,7 +34,8 @@ multi method new($data is copy, %name-offsets is rw, $start-offset){
     $data = Buf.new($data[10..*]);
     my $rdata = Buf.new($data[0..^$rdlength]);
 
-    my $self = self.bless(:@name, :$type, :$class, :$ttl, :$rdata, :$start-offset, :$parsed-bytes, :%name-offsets);
+    my $self = self.bless(:@name, :$type, :$class, :$ttl, :$rdata, :$start-offset, :$parsed-bytes);
+    $self.set-name-offsets(%name-offsets);
 
     given $type {
         when 1 { # A
@@ -70,6 +71,10 @@ multi method new($data is copy, %name-offsets is rw, $start-offset){
 
 multi method new () {
     self.bless();
+}
+
+method set-name-offsets(%name-offsets is rw){
+    %!name-offsets := %name-offsets;
 }
 
 method Buf {

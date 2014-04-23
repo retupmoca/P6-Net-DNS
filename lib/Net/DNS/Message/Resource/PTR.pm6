@@ -9,6 +9,7 @@ class Net::DNS::PTR {
 }
 
 method rdata-parsed {
-    my $name = self.parse-domain-name($.rdata, %.name-offsets, $.start-offset + $.parsed-bytes);
+    my $rdata-length = $.rdata.elems;
+    my $name = self.parse-domain-name($.rdata, %.name-offsets, $.start-offset + $.parsed-bytes - $rdata-length);
     return Net::DNS::PTR.new(:name($name<name>.list));
 }
