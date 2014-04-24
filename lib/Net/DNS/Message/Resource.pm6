@@ -8,6 +8,7 @@ use Net::DNS::Message::Resource::PTR;
 use Net::DNS::Message::Resource::SPF;
 use Net::DNS::Message::Resource::SRV;
 use Net::DNS::Message::Resource::TXT;
+use Net::DNS::Message::Resource::SOA;
 
 class Net::DNS::Message::Resource does Net::DNS::Message::DomainName;
 
@@ -64,6 +65,9 @@ multi method new($data is copy, %name-offsets is rw, $start-offset){
         }
         when 16 { # TXT
             $self does Net::DNS::Message::Resource::TXT;
+        }
+        when 6 { # SOA
+            $self does Net::DNS::Message::Resource::SOA;
         }
     }
 

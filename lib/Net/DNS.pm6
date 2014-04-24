@@ -17,7 +17,8 @@ my %types = A     => 1,
             PTR   => 12,
             SPF   => 99,
             SRV   => 33,
-            TXT   => 16;
+            TXT   => 16,
+            SOA   => 6;
 method lookup($type, $host){
     my @host = $host.split('.');
     my $message = Net::DNS::Message.new;

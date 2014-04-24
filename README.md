@@ -84,3 +84,10 @@ attributes to access each piece of information that was returned.
     Returns a class with the attribute `$.text`
 
     Stringifies to the text
+
+ -  `SOA`
+
+    Returns a class with the attributes `@.mname`, `@.rname`, `$.serial`, `$.refresh`,
+    `$.retry`, `$.expire`, `$.minimum`
+
+    Stringifies to a format similar to nslookup

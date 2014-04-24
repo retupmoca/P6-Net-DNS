@@ -15,7 +15,7 @@ method parse-domain-name($data is copy, %name-offsets is rw, $start-offset) {
             $len = 0;
         } else {
             $parsed-bytes += $len;
-            @offset-list.push($len);
+            @offset-list.push($parsed-bytes);
             @name.push(Buf.new($data[0..^$len]).decode('ascii'));
             $data = Buf.new($data[$len..*]);
             $len = $data.unpack('C');
