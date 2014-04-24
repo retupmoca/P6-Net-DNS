@@ -94,3 +94,10 @@ is the same as the domain name you did the lookup on.
     `$.retry`, `$.expire`, `$.minimum`
 
     Stringifies to a format similar to nslookup
+
+ -  `AXFR`
+
+    Zone transfer request.
+
+    This is a special case - it returns a list of the above objects instead of it's
+    own response type.

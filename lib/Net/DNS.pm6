@@ -18,8 +18,10 @@ my %types = A     => 1,
             SPF   => 99,
             SRV   => 33,
             TXT   => 16,
-            SOA   => 6;
-method lookup($type, $host){
+            SOA   => 6,
+            AXFR  => 252;
+method lookup($type is copy, $host){
+    $type = $type.uc;
     my @host = $host.split('.');
     my $message = Net::DNS::Message.new;
     $message.header = Net::DNS::Message::Header.new;
@@ -39,11 +41,32 @@ method lookup($type, $host){
     my $inc-size = $client.read(2);
     $inc-size = $inc-size.unpack('n');
     my $incoming = $client.read($inc-size);
-    $client.close;
+    if $type eq 'AXFR' {
+        my @responses = (Net::DNS::Message.new($incoming));
+        loop {
+            $inc-size = $client.read(2);
+            $inc-size = $inc-size.unpack('n');
+            $incoming = $client.read($inc-size);
+            my $obj = Net::DNS::Message.new($incoming);
+            if $obj.answer[0] ~~ Net::DNS::SOA {
+                last;
+            } else {
+                @responses.push($obj);
+            }
+        }
 
-    my $inc-message = Net::DNS::Message.new($incoming);
+        return gather for @responses -> $r {
+            for $r.answer.list {
+                take $_.rdata-parsed;
+            }
+        }
+    } else {
+        $client.close;
 
-    return gather for $inc-message.answer.list {
-        take $_.rdata-parsed;
+        my $inc-message = Net::DNS::Message.new($incoming);
+
+        return gather for $inc-message.answer.list {
+            take $_.rdata-parsed;
+        }
     }
 }
