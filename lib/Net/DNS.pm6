@@ -42,17 +42,22 @@ method lookup($type is copy, $host){
     $inc-size = $inc-size.unpack('n');
     my $incoming = $client.read($inc-size);
     if $type eq 'AXFR' {
-        my @responses = (Net::DNS::Message.new($incoming));
+        my @responses = gather for Net::DNS::Message.new($incoming).answer.list {
+            take $_.rdata-parsed;
+        };
+        unless @responses[0] ~~ Net::DNS::SOA {
+            fail "Domain transfer failed.";
+        }
         loop {
+            if +@responses > 1 && @responses[*-1] ~~ Net::DNS::SOA {
+                return @responses;
+            }
             $inc-size = $client.read(2);
             $inc-size = $inc-size.unpack('n');
             $incoming = $client.read($inc-size);
+            fail "Domain transfer failed." unless $incoming;
             my $obj = Net::DNS::Message.new($incoming);
-            if $obj.answer[0] ~~ Net::DNS::SOA {
-                last;
-            } else {
-                @responses.push($obj);
-            }
+            @responses.push(gather for Net::DNS::Message.new($incoming).answer.list { take $_.rdata-parsed; });
         }
 
         return gather for @responses -> $r {
