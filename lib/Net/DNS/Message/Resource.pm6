@@ -4,6 +4,7 @@ use Net::DNS::Message::Resource::A;
 use Net::DNS::Message::Resource::AAAA;
 use Net::DNS::Message::Resource::CNAME;
 use Net::DNS::Message::Resource::MX;
+use Net::DNS::Message::Resource::NS;
 use Net::DNS::Message::Resource::PTR;
 use Net::DNS::Message::Resource::SPF;
 use Net::DNS::Message::Resource::SRV;
