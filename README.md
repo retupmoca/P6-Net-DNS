@@ -30,6 +30,9 @@ type.
 The object returned will stringify to something useful, and will also provide
 attributes to access each piece of information that was returned.
 
+Note that all of these classes also have a `@.owner-name` attribute. Normally this
+is the same as the domain name you did the lookup on.
+
  -  `A`
 
     Returns a class with attribute `@.octets`, which will have 4 elements.

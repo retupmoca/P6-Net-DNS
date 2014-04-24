@@ -1,6 +1,7 @@
 role Net::DNS::Message::Resource::MX;
 
 class Net::DNS::MX {
+    has @.owner-name;
     has $.priority;
     has @.name;
 
@@ -15,5 +16,5 @@ method rdata-parsed {
     my $name = self.parse-domain-name(Buf.new($.rdata[2..*]),
                                       %.name-offsets,
                                       $.start-offset + $.parsed-bytes - $rdata-size + 2);
-    return Net::DNS::MX.new(:$priority, :name($name<name>.list));
+    return Net::DNS::MX.new(:owner-name(@.name), :$priority, :name($name<name>.list));
 }

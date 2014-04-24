@@ -1,6 +1,7 @@
 role Net::DNS::Message::Resource::NS;
 
 class Net::DNS::NS {
+    has @.owner-name;
     has @.name;
 
     method Str {
@@ -11,5 +12,5 @@ class Net::DNS::NS {
 method rdata-parsed {
     my $rdata-length = $.rdata.elems;
     my $name = self.parse-domain-name($.rdata, %.name-offsets, $.start-offset + $.parsed-bytes - $rdata-length);
-    return Net::DNS::NS.new(:name($name<name>.list));
+    return Net::DNS::NS.new(:owner-name(@.name), :name($name<name>.list));
 }

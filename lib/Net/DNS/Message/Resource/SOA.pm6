@@ -1,6 +1,7 @@
 role Net::DNS::Message::Resource::SOA;
 
 class Net::DNS::SOA {
+    has @.owner-name;
     has @.mname;
     has @.rname;
     has $.serial;
@@ -36,7 +37,8 @@ method rdata-parsed {
     $data = $data.subbuf($rname<bytes>);
     my ($serial, $refresh, $retry, $expire, $minimum) = $data.unpack('NNNNN');
 
-    return Net::DNS::SOA.new(:mname($mname<name>),
+    return Net::DNS::SOA.new(:owner-name(@.name),
+                             :mname($mname<name>),
                              :rname($rname<name>),
                              :$serial,
                              :$refresh,

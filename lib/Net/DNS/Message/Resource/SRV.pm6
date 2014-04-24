@@ -1,6 +1,7 @@
 role Net::DNS::Message::Resource::SRV;
 
 class Net::DNS::SRV {
+    has @.owner-name;
     has $.priority;
     has $.weight;
     has $.port;
@@ -17,5 +18,5 @@ method rdata-parsed {
     my $name = self.parse-domain-name(Buf.new($.rdata[6..*]),
                                       %.name-offsets,
                                       $.start-offset + $.parsed-bytes - $rdata-length + 6);
-    return Net::DNS::SRV.new(:$priority, :$weight, :$port, :name($name<name>.list));
+    return Net::DNS::SRV.new(:owner-name(@.name), :$priority, :$weight, :$port, :name($name<name>.list));
 }

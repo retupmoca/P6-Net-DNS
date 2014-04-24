@@ -1,6 +1,7 @@
 role Net::DNS::Message::Resource::AAAA;
 
 class Net::DNS::AAAA {
+    has @.owner-name;
     has @.octets;
 
     method Str {
@@ -16,5 +17,5 @@ class Net::DNS::AAAA {
 }
 
 method rdata-parsed {
-    return Net::DNS::AAAA.new(:octets($.rdata.list));
+    return Net::DNS::AAAA.new(:owner-name(@.name), :octets($.rdata.list));
 }
