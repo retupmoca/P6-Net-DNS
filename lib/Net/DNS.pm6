@@ -3,10 +3,11 @@ class Net::DNS;
 use Net::DNS::Message;
 
 has $.server;
+has $.socket;
 has $.request-id is rw = 0;
 
-method new($server) {
-    self.bless(:$server);
+method new($server, $socket = IO::Socket::INET) {
+    self.bless(:$server, :$socket);
 }
 
 my %types = A     => 1,
@@ -36,7 +37,7 @@ method lookup($type is copy, $host){
 
     my $outgoing = $message.Buf;
     
-    my $client = IO::Socket::INET.new(:host($.server), :port(53));
+    my $client = $.socket.new(:host($.server), :port(53));
     $client.write(pack('n', $outgoing.elems) ~ $outgoing);
     my $inc-size = $client.read(2);
     $inc-size = $inc-size.unpack('n');

@@ -13,9 +13,12 @@ will be added (hopefully) quickly.
 
 ## Methods ##
 
- -  `new(Str $host)`
+ -  `new(Str $host, $socket = IO::Socket::INET)`
     
     Creates a new DNS resolver using the specified DNS server.
+
+    The `$socket` parameter lets you inject your own socket class to use for the
+    query (so you can do a proxy negotiation or somesuch first).
 
  -  `lookup(Str $type, Str $name)`
 
