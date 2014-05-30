@@ -21,7 +21,8 @@ my %types = A     => 1,
             TXT   => 16,
             SOA   => 6,
             AXFR  => 252;
-method lookup($type is copy, $host){
+method lookup($type is copy, $host is copy){
+    $host ~~ s/\.$//;
     $type = $type.uc;
     my @host = $host.split('.');
     my $message = Net::DNS::Message.new;
