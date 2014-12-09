@@ -6,6 +6,9 @@ A simple DNS resolver.
 If you need a request type that isn't yet supported, open a github issue and it
 will be added (hopefully) quickly.
 
+Note: If you are behind a firewall that blocks Google DNS, you will need to set
+DNS_TEST_HOST in your environment to pass the tests.
+
 ## Example Usage ##
 
     my $resolver = Net::DNS.new('8.8.8.8'); # google dns server

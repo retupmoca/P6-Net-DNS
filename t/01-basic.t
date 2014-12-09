@@ -3,12 +3,15 @@ use Test;
 
 plan 6;
 
+my $server = %*ENV<DNS_TEST_HOST> // '8.8.8.8';
+
 use Net::DNS;
 
 ok True, "Module loaded";
 
 my $resolver;
-ok ($resolver = Net::DNS.new('8.8.8.8')), "Created a resolver";
+say '# using %*ENV<DNS_TEST_HOST> = '~$server if $server ne '8.8.8.8';
+ok ($resolver = Net::DNS.new($server)), "Created a resolver";
 
 my $response;
 ok ($response = $resolver.lookup("A", "perl6.org")), "Lookup A record for perl6.org...";
