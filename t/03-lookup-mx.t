@@ -13,4 +13,4 @@ ok ($resolver = Net::DNS.new($server)), "Created a resolver";
 
 my $response;
 ok ($response = $resolver.lookup-mx("perl6.org")), "Lookup mx for perl6.org...";
-ok ($response[0] eq "66.39.3.26"), "...Got a valid response!"; # this will probably need to change in the future
+ok ($response[0] eq "66.39.3.35"), "...Got a valid response!"; # this will probably need to change in the future
