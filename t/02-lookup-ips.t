@@ -7,6 +7,12 @@ my $server = %*ENV<DNS_TEST_HOST> // '8.8.8.8';
 
 use Net::DNS;
 
+unless %*ENV<NETWORK_TESTING> {
+    diag "NETWORK_TESTING was not set";
+    skip-rest("NETWORK_TESTING was not set");
+    exit;
+}
+
 my $resolver;
 say '# using %*ENV<DNS_TEST_HOST> = '~$server if $server ne '8.8.8.8';
 ok ($resolver = Net::DNS.new($server)), "Created a resolver";

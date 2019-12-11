@@ -1,9 +1,18 @@
 use v6;
+
 use Test;
+
+plan 8;
 
 my $server = %*ENV<DNS_TEST_HOST> // '8.8.8.8';
 
 use Net::DNS;
+
+unless %*ENV<NETWORK_TESTING> {
+    diag "NETWORK_TESTING was not set";
+    skip-rest("NETWORK_TESTING was not set");
+    exit;
+}
 
 ok True, "Module loaded";
 
