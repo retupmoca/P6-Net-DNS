@@ -12,5 +12,5 @@ say '# using %*ENV<DNS_TEST_HOST> = '~$server if $server ne '8.8.8.8';
 ok ($resolver = Net::DNS.new($server)), "Created a resolver";
 
 my $response;
-ok ($response = $resolver.lookup-ips("perl6.org")), "Lookup ips for perl6.org...";
-ok ($response[0] eq "213.95.82.53"), "...Got a valid response!"; # this will probably need to change in the future
+ok ($response = $resolver.lookup-ips("raku.org")), "Lookup ips for raku.org...";
+ok ($response[2].Str ~~ ("104.18.58.39", '104.18.59.39').any), "...Got a valid response!"; # this will probably need to change in the future
