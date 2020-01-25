@@ -1,6 +1,6 @@
 {
   "authors": [ "github:retupmoca" ],
-  "auth": null,
+  "auth": "github:retupmoca",
   "tags": [
   ],
   "provides": {
