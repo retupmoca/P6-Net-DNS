@@ -1,7 +1,7 @@
 use v6;
 use Test;
 
-plan 11;
+plan 12;
 
 my $server = %*ENV<DNS_TEST_HOST> // '8.8.8.8';
 
