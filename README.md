@@ -124,3 +124,24 @@ is the same as the domain name you did the lookup on.
 
     This is a special case - it returns a list of the above objects instead of it's
     own response type.
+
+## Exceptions ##
+
+DNS Server errors will produce a Failure response on lookup(), lookup-ips(), and lookup-mx() with an X::Net::DNS object.
+
+ - server-message
+
+   A complete Net::DNS::Message structured response from the server.
+
+ - rcode-value
+
+   Return code Integer received from the DNS server.
+
+ - rcode-name
+
+   [Return code name](https://support.umbrella.com/hc/en-us/articles/232254248-Common-DNS-return-codes-for-any-DNS-service-and-Umbrella-)
+   received from the DNS server. Common values are SERVFAIL and NXDOMAIN.
+
+ - message
+
+   A short english message which might be shown to users.

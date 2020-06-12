@@ -1,3 +1,32 @@
+use Net::DNS::Message;
+
+class X::Net::DNS is Exception {
+    has Net::DNS::Message $.server-message is required;
+
+    method rcode-value() {
+        $.server-message.header.rcode;
+    }
+
+    method rcode-name() {
+        given self.rcode-value {
+            when 0 {'NOERROR'}
+            when 1 {'FORMERR'}
+            when 2 {'SERVFAIL'}
+            when 3 {'NXDOMAIN'}
+            when 4 {'NOTIMP'}
+            when 5 {'REFUSED'}
+            when 6 {'YXDOMAIN'}
+            when 7 {'XRRSET'}
+            when 8 {'NOTAUTH'}
+            when 9 {'NOTZONE'}
+        }
+    }
+
+    method message {
+        sprintf('DNS Server responded with: %d (%s)', self.rcode-value, self.rcode-name);
+    }
+}
+
 class Net::DNS {
     use experimental :pack;
 
@@ -71,6 +100,8 @@ class Net::DNS {
 
             my $inc-message = Net::DNS::Message.new($incoming);
 
+            X::Net::DNS.new(server-message => $inc-message).fail if $inc-message.header.rcode != 0;
+
             return gather for $inc-message.answer.list {
                 take $_.rdata-parsed;
             }
@@ -86,6 +117,8 @@ class Net::DNS {
 
         if $inet6 || !$inet {
             my @raw = self.lookup('AAAA', $host);
+            return @raw[0] if @raw[0] ~~ Failure;
+
             for @raw.grep(Net::DNS::AAAA) -> $res {
                 unless @result.grep({ $_.owner-name eqv $res.owner-name
                         && $_.octets eqv $res.octets }) {
@@ -101,6 +134,8 @@ class Net::DNS {
 
         if $inet || !$inet6 {
             my @raw = self.lookup('A', $host);
+            return @raw[0] if @raw[0] ~~ Failure;
+
             for @raw.grep(Net::DNS::A) -> $res {
                 unless @result.grep({ $_.owner-name eqv $res.owner-name
                         && $_.octets eqv $res.octets }) {
@@ -121,6 +156,8 @@ class Net::DNS {
         my @result;
 
         my @raw = self.lookup('MX', $host);
+        return @raw[0] if @raw[0] ~~ Failure;
+
         for @raw.grep(Net::DNS::MX).sort(*.priority) -> $res {
             @result.append: self.lookup-ips($res.name.join('.'), :$inet, :$inet6);
         }

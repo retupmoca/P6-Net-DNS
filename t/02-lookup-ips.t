@@ -1,7 +1,7 @@
 use v6;
 use Test;
 
-plan 6;
+plan 11;
 
 my $server = %*ENV<DNS_TEST_HOST> // '8.8.8.8';
 
@@ -31,3 +31,13 @@ ok $aaaa-rec.defined, "Got an AAAA record";
 ok $aaaa-rec ~~ ('2606:4700:3037:0000:0000:0000:ac43:d72e', '2606:4700:3037:0000:0000:0000:6812:3a27', '2606:4700:3032:0000:0000:0000:6812:3b27').any, "...Got an expected AAAA record";
 
 
+# Lookup Failure
+my $lookup = $resolver.lookup('A', 'mqkjqwew.rrr');
+ok $lookup ~~ Failure, 'Failure';
+ok $lookup.exception.server-message.defined, 'Server Message provided';
+is $lookup.exception.rcode-value, 3, 'RCode Value set';
+is $lookup.exception.rcode-name, 'NXDOMAIN', 'RCode Name set';
+ok $lookup.exception.message.defined, 'Error message set';
+
+my $ips = $resolver.lookup-ips('266.266.266.266');
+ok $ips ~~ Failure, 'Failure IPs';
