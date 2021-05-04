@@ -14,21 +14,39 @@ unless %*ENV<NETWORK_TESTING> {
 }
 
 my $resolver;
-say '# using %*ENV<DNS_TEST_HOST> = '~$server if $server ne '8.8.8.8';
+diag '# using %*ENV<DNS_TEST_HOST> = '~$server if $server ne '8.8.8.8';
 ok ($resolver = Net::DNS.new($server)), "Created a resolver";
 
 my @response;
 ok (@response = $resolver.lookup-ips("raku.org")), "Lookup ips for raku.org...";
 
+# Define an IPv4 Regex
+my @octet = ^256;
+my $ipv4 = / ^ @octet**4 % '.' $ /;
+
 # Find the first A record.
 my $a-rec = @response.grep(Net::DNS::A).first.Str;
 ok $a-rec.defined, "Got an A record";
-ok $a-rec ~~ ('104.18.58.39', '172.67.215.46', '104.18.59.39').any, "...Got an expected A record";
+like $a-rec, $ipv4, "...Got an expected A record";
+
+# Define an IPv6 grammar
+# Based on Rosetacode
+#   https://rosettacode.org/wiki/Parse_an_IP_Address#Perl_6
+grammar IPv6 {
+    token TOP { ^ <IPv6Addr> $ }
+
+    token IPv6Addr {
+        | <h16> +% ':' <?{ $<h16> == 8}>
+        | [ (<h16>) +% ':']? '::' [ (<h16>) +% ':' ]? <?{ @$0 + @$1 ≤ 8 }>
+    }
+
+    token h16 { (<:hexdigit>+) <?{ @$0 ≤ 4 }> }
+}
 
 # Find the first AAAA record.
 my $aaaa-rec = @response.grep(Net::DNS::AAAA).first.Str;
 ok $aaaa-rec.defined, "Got an AAAA record";
-ok $aaaa-rec ~~ ('2606:4700:3037:0000:0000:0000:ac43:d72e', '2606:4700:3037:0000:0000:0000:6812:3a27', '2606:4700:3032:0000:0000:0000:6812:3b27').any, "...Got an expected AAAA record";
+ok IPv6.parse($aaaa-rec), "...Got an expected AAAA record";
 
 
 # Lookup Failure
