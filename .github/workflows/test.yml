@@ -10,3 +10,5 @@ jobs:
     - name: Runs tests
       id: tests
       uses: JJ/raku-container-action@master
+      env:
+        NETWORK_TESTING: YES
