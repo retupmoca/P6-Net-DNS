@@ -2,7 +2,7 @@ use v6;
 
 use Test;
 
-plan 8;
+plan 6;
 
 my $server = %*ENV<DNS_TEST_HOST> // '8.8.8.8';
 
@@ -17,17 +17,15 @@ unless %*ENV<NETWORK_TESTING> {
 ok True, "Module loaded";
 
 my $resolver;
-say '# using %*ENV<DNS_TEST_HOST> = '~$server if $server ne '8.8.8.8';
+diag '# using %*ENV<DNS_TEST_HOST> = '~$server if $server ne '8.8.8.8';
 ok ($resolver = Net::DNS.new($server)), "Created a resolver";
 
 my $response;
-ok ($response = $resolver.lookup("A", "dns.google")), "Lookup A record for raku.org...";
+ok ($response = $resolver.lookup("A", "dns.google")), "Lookup A record for dns.google...";
 
-ok ($response[0] eq "8.8.4.4"), "...Got a valid response!"; # this will probably need to change in the future
-ok ($response[1] eq "8.8.8.8"), "...Got a valid response!"; # this will probably need to change in the future
+is $response.sort, ["8.8.4.4", "8.8.8.8"], "...Got a valid response!"; # this will probably need to change in the future
 
-ok ($response = $resolver.lookup("A", "dns.google.")), "Lookup A record for raku.org. (with trailing dot)...";
-ok ($response[0] eq "8.8.4.4"), "...Got a valid response!"; # this will probably need to change in the future
-ok ($response[1] eq "8.8.8.8"), "...Got a valid response!"; # this will probably need to change in the future
+ok ($response = $resolver.lookup("A", "dns.google.")), "Lookup A record for dns.google. (with trailing dot)...";
+is $response.sort, ["8.8.4.4", "8.8.8.8"], "...Got a valid response!"; # this will probably need to change in the future
 
 done-testing;
