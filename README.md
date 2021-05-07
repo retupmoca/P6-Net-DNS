@@ -93,6 +93,18 @@ is the same as the domain name you did the lookup on.
 
     Stringifies to a domain name.
 
+ -  `RRSIG`
+
+    Returns a class with attributes `$.type-covered`, `$.algorithm`,
+    `$.labels`, `$.original-ttl`, `$.signature-expiration`,
+    `$.signature-inception`, `$.key-tag`, `$.signer-name`, and
+    `$.signature`.
+
+    Stringifies to a a string with similar output to the output produced
+    by the `dig` command line utility.
+
+    Note that this module does not validate the validity of a DNSSEC signature.
+
  -  `SRV`
 
     Returns a class with the attributes `$.priority`, `$.weight`, `$.port`, `@.name`.

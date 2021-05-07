@@ -1,4 +1,5 @@
 use Net::DNS::Message;
+use Net::DNS::Type;
 
 class X::Net::DNS is Exception {
     has Net::DNS::Message $.server-message is required;
@@ -38,17 +39,6 @@ class Net::DNS {
         self.bless(:$server, :$socket);
     }
 
-    my %types = A     => 1,
-            AAAA  => 28,
-            CNAME => 5,
-            MX    => 15,
-            NS    => 2,
-            PTR   => 12,
-            SPF   => 99,
-            SRV   => 33,
-            TXT   => 16,
-            SOA   => 6,
-            AXFR  => 252;
     method lookup($type is copy, $host is copy){
         $host ~~ s/\.$//;
         $type = $type.uc;
@@ -60,7 +50,7 @@ class Net::DNS {
         $message.header.qdcount = 1;
         my $q = Net::DNS::Message::Question.new;
         $q.qname = @host;
-        $q.qtype = %types{$type};
+        $q.qtype = Net::DNS::Type.new($type).type;
         $q.qclass = 1;
         $message.question.push($q);
 

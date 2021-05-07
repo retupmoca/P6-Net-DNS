@@ -6,6 +6,7 @@ use Net::DNS::Message::Resource::CNAME;
 use Net::DNS::Message::Resource::MX;
 use Net::DNS::Message::Resource::NS;
 use Net::DNS::Message::Resource::PTR;
+use Net::DNS::Message::Resource::RRSIG;
 use Net::DNS::Message::Resource::SPF;
 use Net::DNS::Message::Resource::SRV;
 use Net::DNS::Message::Resource::TXT;
@@ -59,6 +60,9 @@ multi method new($data is copy, %name-offsets, $start-offset){
         }
         when 12 { # PTR
             $self does Net::DNS::Message::Resource::PTR;
+        }
+        when 46 { # RRSIG
+            $self does Net::DNS::Message::Resource::RRSIG;
         }
         when 99 { # SPF
             $self does Net::DNS::Message::Resource::SPF;

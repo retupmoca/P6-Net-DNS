@@ -2,7 +2,7 @@ unit role Net::DNS::Message::DomainName;
 
 use experimental :pack;
 
-method parse-domain-name($data is copy, %name-offsets, $start-offset) {
+method parse-domain-name($data is copy, %name-offsets, $start-offset, :$allow-compression = True) {
     my @offset-list = (0);
     my $parsed-bytes = 1;
     my $len = $data.unpack('C');
@@ -10,6 +10,7 @@ method parse-domain-name($data is copy, %name-offsets, $start-offset) {
     my @name;
     while $len > 0 {
         if $len >= 192 {
+            die "Compression not allowed here" unless $allow-compression;
             $parsed-bytes += 1;
             @offset-list.push(0);
             @name.append(%name-offsets{$data[0]}.list);
