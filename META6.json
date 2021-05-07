@@ -26,6 +26,7 @@
     "Net::DNS::Message::Resource::MX": "lib/Net/DNS/Message/Resource/MX.pm6",
     "Net::DNS::Message::Resource::NS": "lib/Net/DNS/Message/Resource/NS.pm6",
     "Net::DNS::Message::Resource::PTR": "lib/Net/DNS/Message/Resource/PTR.pm6",
+    "Net::DNS::Message::Resource::RRSIG": "lib/Net/DNS/Message/Resource/RRSIG.pm6",
     "Net::DNS::Message::Resource::SOA": "lib/Net/DNS/Message/Resource/SOA.pm6",
     "Net::DNS::Message::Resource::SPF": "lib/Net/DNS/Message/Resource/SPF.pm6",
     "Net::DNS::Message::Resource::SRV": "lib/Net/DNS/Message/Resource/SRV.pm6",
