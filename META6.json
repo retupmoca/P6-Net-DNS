@@ -30,7 +30,8 @@
     "Net::DNS::Message::Resource::SOA": "lib/Net/DNS/Message/Resource/SOA.pm6",
     "Net::DNS::Message::Resource::SPF": "lib/Net/DNS/Message/Resource/SPF.pm6",
     "Net::DNS::Message::Resource::SRV": "lib/Net/DNS/Message/Resource/SRV.pm6",
-    "Net::DNS::Message::Resource::TXT": "lib/Net/DNS/Message/Resource/TXT.pm6"
+    "Net::DNS::Message::Resource::TXT": "lib/Net/DNS/Message/Resource/TXT.pm6",
+    "Net::DNS::Type": "lib/Net/DNS/Type.pm6"
   },
   "resources": [
   ],
