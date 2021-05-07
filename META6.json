@@ -33,6 +33,7 @@
     "Net::DNS::Message::Resource::TXT": "lib/Net/DNS/Message/Resource/TXT.pm6",
     "Net::DNS::Type": "lib/Net/DNS/Type.pm6"
   },
+  "raku": null,
   "resources": [
   ],
   "source-url": "git://github.com/retupmoca/P6-Net-DNS.git",
@@ -41,8 +42,11 @@
     "email": "rbt@cpan.org",
     "source": "https://github.com/retupmoca/P6-Net-DNS.git"
   },
-  "tags": ["Net", "DNS"],
+  "tags": [
+    "Net",
+    "DNS"
+  ],
   "test-depends": [
   ],
-  "version": "1.2"
+  "version": "1.3"
 }
